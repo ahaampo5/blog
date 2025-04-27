@@ -1,0 +1,14 @@
+# uv venv
+.venv/
+
+# python cache
+__pycache__/
+
+# node_modules
+node_modules/
+
+# vscode
+.vscode/
+
+# DS_Store
+.DS_Store
