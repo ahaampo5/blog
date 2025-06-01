@@ -29,7 +29,7 @@ export interface Post {
   category_id?: string;
   tags: string[];
   featured_image?: string;
-  is_published: boolean;
+  published: boolean;
   views: number;
   created_at: string;
   updated_at: string;

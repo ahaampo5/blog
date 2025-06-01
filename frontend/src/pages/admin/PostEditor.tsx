@@ -69,7 +69,7 @@ const AdminPostEditor: React.FC = () => {
         category_id: post.category_id || '',
         tags: post.tags,
         featured_image: post.featured_image || '',
-        is_published: post.is_published,
+        is_published: post.published,
       });
       setSelectedTags(post.tags);
     }

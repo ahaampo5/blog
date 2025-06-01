@@ -21,6 +21,8 @@ import PublicLayout from './components/layouts/PublicLayout';
 import AdminLayout from './components/layouts/AdminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
+
+
 // Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,7 +47,7 @@ function App() {
               <Route path="category/:id" element={<CategoryPosts />} />
               <Route path="tag/:id" element={<TagPosts />} />
             </Route>
-
+            
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route

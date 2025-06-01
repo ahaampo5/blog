@@ -94,7 +94,7 @@ const AdminDashboard: React.FC = () => {
                   <div>
                     <h3 className="font-medium text-gray-900">{post.title}</h3>
                     <p className="text-sm text-gray-600">
-                      {post.is_published ? '게시됨' : '임시저장'} • {post.views} 조회
+                      {post.published ? '게시됨' : '임시저장'} • {post.views} 조회
                     </p>
                   </div>
                   <Link

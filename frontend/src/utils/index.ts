@@ -2,12 +2,21 @@ import { User } from '../types';
 
 // Auth utilities
 export const getStoredToken = (): string | null => {
-  return localStorage.getItem('access_token');
+  const token = localStorage.getItem('access_token');
+  return token === undefined ? null : token;
 };
 
 export const getStoredUser = (): User | null => {
   const userStr = localStorage.getItem('user');
-  return userStr ? JSON.parse(userStr) : null;
+  if (userStr === null || userStr === undefined) {
+    return null;
+  }
+  try {
+    return JSON.parse(userStr);
+  } catch (e) {
+    // Malformed JSON in localStorage, treat as not found
+    return null;
+  }
 };
 
 export const storeAuth = (token: string, user: User): void => {
@@ -63,8 +72,8 @@ export const generateExcerpt = (content: string, maxLength: number = 200): strin
     .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
     .replace(/\*(.*?)\*/g, '$1') // Remove italic
     .replace(/`(.*?)`/g, '$1') // Remove inline code
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // Remove images (must come before links)
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
-    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // Remove images
     .replace(/\n+/g, ' ') // Replace newlines with spaces
     .trim();
 
@@ -82,7 +91,11 @@ export const generateSlug = (title: string): string => {
 
 // File utilities
 export const getFileExtension = (filename: string): string => {
-  return filename.split('.').pop()?.toLowerCase() || '';
+  const lastDot = filename.lastIndexOf('.');
+  if (lastDot === -1 || lastDot === 0 || lastDot === filename.length - 1) {
+    return ''; // No extension, or dot is at the beginning/end
+  }
+  return filename.substring(lastDot + 1).toLowerCase();
 };
 
 export const isImageFile = (filename: string): boolean => {
