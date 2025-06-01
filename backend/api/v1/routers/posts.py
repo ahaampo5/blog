@@ -152,7 +152,7 @@ async def get_admin_post(post_id: str, current_user: dict = Depends(admin_requir
     )
 
 
-@router.post("/", response_model=PostResponse)
+@router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
 async def create_post(post_data: PostCreate, current_user: dict = Depends(admin_required)):
     """Create new post (admin only)"""
     db = get_database()
@@ -253,7 +253,7 @@ async def update_post(
     )
 
 
-@router.delete("/{post_id}", response_model=MessageResponse)
+@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(post_id: str, current_user: dict = Depends(admin_required)):
     """Delete post (admin only)"""
     if not ObjectId.is_valid(post_id):
@@ -266,4 +266,4 @@ async def delete_post(post_id: str, current_user: dict = Depends(admin_required)
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Post not found")
     
-    return {"message": "Post deleted successfully"}
+    return  # 204는 본문 없이 반환

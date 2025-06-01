@@ -50,16 +50,22 @@ api.interceptors.response.use(
 // Auth API
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const formData = new FormData();
-    formData.append('username', credentials.username);
-    formData.append('password', credentials.password);
+    const response = await api.post('/auth/login', credentials);
     
-    const response = await api.post('/auth/login', formData, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
-    return response.data;
+    // 백엔드 응답에 user 정보가 없으므로 기본 사용자 정보를 생성
+    const authResponse: AuthResponse = {
+      access_token: response.data.access_token,
+      token_type: response.data.token_type,
+      user: {
+        _id: '1',
+        username: credentials.username,
+        email: `${credentials.username}@admin.com`,
+        is_admin: true,
+        created_at: new Date().toISOString(),
+      }
+    };
+    
+    return authResponse;
   },
 
   logout: () => {
