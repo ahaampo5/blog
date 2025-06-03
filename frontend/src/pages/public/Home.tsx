@@ -79,7 +79,7 @@ const Home: React.FC = () => {
       {/* Posts grid */}
       <div className="grid gap-6">
         {posts.slice(1).map((post) => (
-          <PostCard key={post._id} post={post} />
+          <PostCard key={post.id} post={post} />
         ))}
       </div>
 
@@ -144,7 +144,7 @@ const FeaturedPost: React.FC<{ post: PostWithDetails }> = ({ post }) => {
           <span>{post.views} 조회</span>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          <Link to={`/post/${post._id}`} className="hover:text-blue-600 transition-colors">
+          <Link to={`/post/${post.id}`} className="hover:text-blue-600 transition-colors">
             {post.title}
           </Link>
         </h1>
@@ -195,7 +195,7 @@ const PostCard: React.FC<{ post: PostWithDetails }> = ({ post }) => {
             <span>{post.views} 조회</span>
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            <Link to={`/post/${post._id}`} className="hover:text-blue-600 transition-colors">
+            <Link to={`/post/${post.id}`} className="hover:text-blue-600 transition-colors">
               {post.title}
             </Link>
           </h2>
