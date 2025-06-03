@@ -57,7 +57,7 @@ export const authApi = {
       access_token: response.data.access_token,
       token_type: response.data.token_type,
       user: {
-        _id: '1',
+        id: '1',
         username: credentials.username,
         email: `${credentials.username}@admin.com`,
         is_admin: true,

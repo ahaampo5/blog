@@ -19,7 +19,7 @@ const Header: React.FC = () => {
             >
               홈
             </Link>
-            <Link 
+            {/* <Link 
               to="/categories" 
               className="text-gray-700 hover:text-blue-600 transition-colors"
             >
@@ -30,7 +30,7 @@ const Header: React.FC = () => {
               className="text-gray-700 hover:text-blue-600 transition-colors"
             >
               태그
-            </Link>
+            </Link> */}
           </nav>
           
           {/* Search */}

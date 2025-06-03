@@ -43,13 +43,13 @@ export const handlers = [
     return HttpResponse.json({
       items: [
         {
-          _id: '1',
+          id: '1',
           title: 'Sample Blog Post',
           content: 'Test content',
           slug: 'sample-blog-post',
           category_id: '1',
-          category: { _id: '1', name: 'Technology', slug: 'technology' },
-          tag_details: [{ _id: '1', name: 'React', slug: 'react' }],
+          category: { id: '1', name: 'Technology', slug: 'technology' },
+          tag_details: [{ id: '1', name: 'React', slug: 'react' }],
           published: true,
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z',
@@ -69,13 +69,13 @@ export const handlers = [
     
     if (id === '1') {
       return HttpResponse.json({
-        _id: '1',
+        id: '1',
         title: 'Test Post',
         content: 'Test content',
         slug: 'test-post',
         category_id: '1',
-        category: { _id: '1', name: 'Technology', slug: 'technology' },
-        tag_details: [{ _id: '1', name: 'React', slug: 'react' }],
+        category: { id: '1', name: 'Technology', slug: 'technology' },
+        tag_details: [{ id: '1', name: 'React', slug: 'react' }],
         published: true,
         created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-01T00:00:00Z',
@@ -95,12 +95,12 @@ export const handlers = [
     }
     
     return HttpResponse.json({
-      _id: '2',
+      id: '2',
       title: 'New Post',
       content: 'New content',
       slug: 'new-post',
       category_id: '1',
-      category: { _id: '1', name: 'Technology', slug: 'technology' },
+      category: { id: '1', name: 'Technology', slug: 'technology' },
       tags: [],
       is_published: false,
       created_at: '2024-01-01T00:00:00Z',

@@ -46,7 +46,7 @@ const AdminCategories: React.FC = () => {
 
   const handleEdit = (category: any) => {
     setFormData({ name: category.name, description: category.description || '' });
-    setEditingId(category._id);
+    setEditingId(category.id);
     setShowForm(true);
   };
 
@@ -144,7 +144,7 @@ const AdminCategories: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {categories.map((category) => (
-              <tr key={category._id}>
+              <tr key={category.id}>
                 <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                   {category.name}
                 </td>
@@ -159,7 +159,7 @@ const AdminCategories: React.FC = () => {
                     편집
                   </button>
                   <button
-                    onClick={() => handleDelete(category._id, category.name)}
+                    onClick={() => handleDelete(category.id, category.name)}
                     className="text-red-600 hover:text-red-700"
                   >
                     삭제

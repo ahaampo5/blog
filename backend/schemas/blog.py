@@ -10,7 +10,7 @@ class PostCreate(BaseModel):
     category_id: Optional[str] = None
     tags: List[str] = []
     featured_image: Optional[str] = None
-    published: bool = False
+    is_published: bool = False
 
 
 class PostUpdate(BaseModel):
@@ -20,7 +20,7 @@ class PostUpdate(BaseModel):
     category_id: Optional[str] = None
     tags: Optional[List[str]] = None
     featured_image: Optional[str] = None
-    published: Optional[bool] = None
+    is_published: Optional[bool] = None
 
 
 class PostResponse(BaseModel):
@@ -29,25 +29,28 @@ class PostResponse(BaseModel):
     content: str
     summary: Optional[str] = None
     category_id: Optional[str] = None
-    category_name: Optional[str] = None
+    category: Optional[dict] = None  # Category details
     tags: List[str] = []
+    tag_details: Optional[List[dict]] = None  # Tag details
     featured_image: Optional[str] = None
-    published: bool
+    is_published: bool
     created_at: datetime
     updated_at: datetime
-    view_count: int
+    views: int
 
 
 class PostListResponse(BaseModel):
     id: str
     title: str
     summary: Optional[str] = None
-    category_name: Optional[str] = None
+    content: Optional[str] = None
+    category_id: Optional[str] = None
+    category: Optional[dict] = None  # Category details
     tags: List[str] = []
     featured_image: Optional[str] = None
-    published: bool
+    is_published: bool
     created_at: datetime
-    view_count: int
+    views: int
 
 
 class CategoryCreate(BaseModel):

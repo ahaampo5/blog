@@ -53,7 +53,7 @@ const PostDetail: React.FC = () => {
           <span>{formatDate(post.created_at)}</span>
           {post.category && (
             <Link
-              to={`/category/${post.category_id}`}
+              to={`/category/${post.category.id}`}
               className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full"
             >
               {post.category.name}
@@ -79,8 +79,8 @@ const PostDetail: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {post.tag_details.map((tag) => (
                 <Link
-                  key={tag._id}
-                  to={`/tag/${tag._id}`}
+                  key={tag.id}
+                  to={`/tag/${tag.id}`}
                   className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors"
                 >
                   #{tag.name}

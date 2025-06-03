@@ -66,19 +66,19 @@ const AdminPosts: React.FC = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {posts.map((post) => (
-              <tr key={post._id}>
+              <tr key={post.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{post.title}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      post.published
+                      post.is_published
                         ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
                     }`}
                   >
-                    {post.published ? '게시됨' : '임시저장'}
+                    {post.is_published ? '게시됨' : '임시저장'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -89,13 +89,13 @@ const AdminPosts: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                   <Link
-                    to={`/admin/posts/edit/${post._id}`}
+                    to={`/admin/posts/edit/${post.id}`}
                     className="text-blue-600 hover:text-blue-700"
                   >
                     편집
                   </Link>
                   <button
-                    onClick={() => handleDelete(post._id, post.title)}
+                    onClick={() => handleDelete(post.id, post.title)}
                     className="text-red-600 hover:text-red-700"
                     disabled={deleteMutation.isPending}
                   >
