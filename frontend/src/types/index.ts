@@ -54,7 +54,7 @@ export interface AuthResponse {
 export interface CreatePostRequest {
   title: string;
   content: string;
-  excerpt?: string;
+  summary?: string;
   category_id?: string;
   tags: string[];
   featured_image?: string;

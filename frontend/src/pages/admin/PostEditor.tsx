@@ -14,7 +14,7 @@ const AdminPostEditor: React.FC = () => {
   const [formData, setFormData] = useState<CreatePostRequest>({
     title: '',
     content: '',
-    excerpt: '',
+    summary: '',
     category_id: '',
     tags: [],
     featured_image: '',
