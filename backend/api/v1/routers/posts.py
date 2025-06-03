@@ -13,26 +13,27 @@ from schemas.blog import (
 router = APIRouter()
 
 
-@router.get("/", response_model=List[PostListResponse])
-async def get_posts(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1, le=100),
+@router.get("/public", response_model=dict)
+async def get_public_posts(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, ge=1, le=100),
     category: Optional[str] = Query(None),
-    tag: Optional[str] = Query(None),
-    published_only: bool = Query(True),
+    tags: Optional[List[str]] = Query(None),
     search: Optional[str] = Query(None)
 ):
-    """Get posts list (public endpoint)"""
+    """Get published posts with pagination (public endpoint)"""
     db = get_database()
     
-    # Build query
-    query = {}
-    if published_only:
-        query["published"] = True
+    # Calculate skip value (page is 1-based in frontend)
+    skip = (page - 1) * size
+    
+    # Build query for published posts only
+    query = {"published": True}
+    
     if category:
         query["category_name"] = category
-    if tag:
-        query["tags"] = {"$in": [tag]}
+    if tags:
+        query["tags"] = {"$in": tags}
     if search:
         query["$or"] = [
             {"title": {"$regex": search, "$options": "i"}},
@@ -40,9 +41,13 @@ async def get_posts(
             {"summary": {"$regex": search, "$options": "i"}}
         ]
     
-    posts = await db.posts.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(length=limit)
+    # Get total count for pagination
+    total = await db.posts.count_documents(query)
     
-    return [
+    # Get posts with pagination
+    posts = await db.posts.find(query).sort("created_at", -1).skip(skip).limit(size).to_list(length=size)
+    
+    items = [
         PostListResponse(
             id=str(post["_id"]),
             title=post["title"],
@@ -56,6 +61,91 @@ async def get_posts(
         )
         for post in posts
     ]
+    
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": (total + size - 1) // size
+    }
+
+
+@router.get("/public/{post_id}", response_model=PostResponse)
+async def get_public_post(post_id: str):
+    """Get single published post (public endpoint)"""
+    if not ObjectId.is_valid(post_id):
+        raise HTTPException(status_code=400, detail="Invalid post ID")
+    
+    db = get_database()
+    post = await db.posts.find_one({"_id": ObjectId(post_id), "published": True})
+    
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    # Increment view count
+    await db.posts.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$inc": {"view_count": 1}}
+    )
+    post["view_count"] = post.get("view_count", 0) + 1
+    
+    return PostResponse(
+        id=str(post["_id"]),
+        title=post["title"],
+        content=post["content"],
+        summary=post.get("summary"),
+        category_id=str(post["category_id"]) if post.get("category_id") else None,
+        category_name=post.get("category_name"),
+        tags=post.get("tags", []),
+        featured_image=post.get("featured_image"),
+        published=post["published"],
+        created_at=post["created_at"],
+        updated_at=post["updated_at"],
+        view_count=post["view_count"]
+    )
+
+
+@router.get("/", response_model=dict)
+async def get_posts(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, ge=1, le=100),
+    current_user: dict = Depends(admin_required)
+):
+    """Get all posts with pagination (admin only)"""
+    db = get_database()
+    
+    # Calculate skip value
+    skip = (page - 1) * size
+    
+    # Get total count
+    total = await db.posts.count_documents({})
+    
+    # Get posts with pagination
+    posts = await db.posts.find({}).sort("created_at", -1).skip(skip).limit(size).to_list(length=size)
+    
+    items = [
+        PostListResponse(
+            id=str(post["_id"]),
+            title=post["title"],
+            summary=post.get("summary"),
+            category_name=post.get("category_name"),
+            tags=post.get("tags", []),
+            featured_image=post.get("featured_image"),
+            published=post["published"],
+            created_at=post["created_at"],
+            view_count=post.get("view_count", 0)
+        )
+        for post in posts
+    ]
+    
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": (total + size - 1) // size
+    }
 
 
 @router.get("/admin", response_model=List[PostListResponse])

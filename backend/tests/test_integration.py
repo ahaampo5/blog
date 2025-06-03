@@ -109,13 +109,13 @@ class TestBlogIntegration:
             await client.post("/api/v1/posts", json=post_data, headers=auth_headers)
 
         # Test first page
-        page1_response = await client.get("/api/v1/posts?skip=0&limit=10")
+        page1_response = await client.get("/api/v1/posts?skip=0&limit=10&published_only=true")
         assert page1_response.status_code == 200
         page1_posts = page1_response.json()
         assert len(page1_posts) <= 10
 
         # Test second page
-        page2_response = await client.get("/api/v1/posts?skip=10&limit=10")
+        page2_response = await client.get("/api/v1/posts?skip=10&limit=10&published_only=true")
         assert page2_response.status_code == 200
         page2_posts = page2_response.json()
         
