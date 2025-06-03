@@ -52,7 +52,7 @@ const AdminPostEditor: React.FC = () => {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: CreatePostRequest }) =>
-      postsApi.updatePost(id, { ...data, _id: id }),
+      postsApi.updatePost(id, { ...data, id: id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
       navigate('/admin/posts');
@@ -65,11 +65,11 @@ const AdminPostEditor: React.FC = () => {
       setFormData({
         title: post.title,
         content: post.content,
-        excerpt: post.excerpt || '',
+        summary: post.summary || '',
         category_id: post.category_id || '',
         tags: post.tags,
         featured_image: post.featured_image || '',
-        is_published: post.published,
+        is_published: post.is_published,
       });
       setSelectedTags(post.tags);
     }
@@ -140,8 +140,8 @@ const AdminPostEditor: React.FC = () => {
               요약 (선택사항)
             </label>
             <textarea
-              value={formData.excerpt}
-              onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+              value={formData.summary}
+              onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="포스트 요약을 입력하세요"
@@ -160,7 +160,7 @@ const AdminPostEditor: React.FC = () => {
             >
               <option value="">카테고리 선택</option>
               {categories.map((category) => (
-                <option key={category._id} value={category._id}>
+                <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
@@ -175,11 +175,11 @@ const AdminPostEditor: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <button
-                  key={tag._id}
+                  key={tag.id}
                   type="button"
-                  onClick={() => handleTagToggle(tag._id)}
+                  onClick={() => handleTagToggle(tag.id)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedTags.includes(tag._id)
+                    selectedTags.includes(tag.id)
                       ? 'bg-blue-100 text-blue-700'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}

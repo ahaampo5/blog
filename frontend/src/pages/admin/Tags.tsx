@@ -46,7 +46,7 @@ const AdminTags: React.FC = () => {
 
   const handleEdit = (tag: any) => {
     setFormData({ name: tag.name });
-    setEditingId(tag._id);
+    setEditingId(tag.id);
     setShowForm(true);
   };
 
@@ -122,7 +122,7 @@ const AdminTags: React.FC = () => {
           <div className="flex flex-wrap gap-3">
             {tags.map((tag) => (
               <div
-                key={tag._id}
+                key={tag.id}
                 className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-full"
               >
                 <span className="text-sm font-medium text-gray-700">#{tag.name}</span>
@@ -133,7 +133,7 @@ const AdminTags: React.FC = () => {
                   편집
                 </button>
                 <button
-                  onClick={() => handleDelete(tag._id, tag.name)}
+                  onClick={() => handleDelete(tag.id, tag.name)}
                   className="text-red-600 hover:text-red-700 text-sm"
                 >
                   삭제

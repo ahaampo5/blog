@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
                   홈
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a href="/categories" className="text-gray-400 hover:text-white transition-colors">
                   카테고리
                 </a>
@@ -31,7 +31,7 @@ const Footer: React.FC = () => {
                 <a href="/tags" className="text-gray-400 hover:text-white transition-colors">
                   태그
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
           
@@ -39,7 +39,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">연락처</h3>
             <p className="text-gray-400">
-              Email: admin@myblog.com
+              Email: ahaampo5@gmail.com
             </p>
           </div>
         </div>

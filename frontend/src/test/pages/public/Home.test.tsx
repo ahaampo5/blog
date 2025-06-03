@@ -33,31 +33,31 @@ const createWrapper = () => {
 
 const mockPosts = [
   {
-    _id: '1',
+    id: '1',
     title: 'Test Post 1',
     content: 'This is test content for post 1',
     slug: 'test-post-1',
     published: true,
     created_at: '2024-01-01T00:00:00Z',
     category_id: '1',
-    category: { _id: '1', name: 'Technology', slug: 'technology' },
+    category: { id: '1', name: 'Technology', slug: 'technology' },
     tag_details: [
-      { _id: '1', name: 'React', slug: 'react' },
-      { _id: '2', name: 'TypeScript', slug: 'typescript' },
+      { id: '1', name: 'React', slug: 'react' },
+      { id: '2', name: 'TypeScript', slug: 'typescript' },
     ],
     views: 0,
   },
   {
-    _id: '2',
+    id: '2',
     title: 'Test Post 2',
     content: 'This is test content for post 2',
     slug: 'test-post-2',
     published: true,
     created_at: '2024-01-02T00:00:00Z',
     category_id: '2',
-    category: { _id: '2', name: 'Travel', slug: 'travel' },
+    category: { id: '2', name: 'Travel', slug: 'travel' },
     tag_details: [
-      { _id: '3', name: 'Adventure', slug: 'adventure' },
+      { id: '3', name: 'Adventure', slug: 'adventure' },
     ],
     views: 0,
   },

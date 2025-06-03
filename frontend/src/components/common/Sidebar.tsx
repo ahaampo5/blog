@@ -21,9 +21,9 @@ const Sidebar: React.FC = () => {
         <h3 className="text-lg font-semibold mb-4 text-gray-900">카테고리</h3>
         <ul className="space-y-2">
           {categories.map((category) => (
-            <li key={category._id}>
+            <li key={category.id}>
               <Link
-                to={`/category/${category._id}`}
+                to={`/category/${category.id}`}
                 className="text-gray-600 hover:text-blue-600 transition-colors block py-1"
               >
                 {category.name}
@@ -39,8 +39,8 @@ const Sidebar: React.FC = () => {
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
             <Link
-              key={tag._id}
-              to={`/tag/${tag._id}`}
+              key={tag.id}
+              to={`/tag/${tag.id}`}
               className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition-colors"
             >
               #{tag.name}

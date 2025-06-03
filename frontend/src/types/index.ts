@@ -1,6 +1,6 @@
 // Types for our blog system
 export interface User {
-  _id: string;
+  id: string;
   username: string;
   email: string;
   is_admin: boolean;
@@ -8,14 +8,14 @@ export interface User {
 }
 
 export interface Category {
-  _id: string;
+  id: string;
   name: string;
   description?: string;
   created_at: string;
 }
 
 export interface Tag {
-  _id: string;
+  id: string;
   name: string;
   created_at: string;
 }
@@ -24,12 +24,11 @@ export interface Post {
   id: string;
   title: string;
   content: string;
-  excerpt?: string;
-  author_id: string;
+  summary?: string;
   category_id?: string;
   tags: string[];
   featured_image?: string;
-  published: boolean;
+  is_published: boolean;
   views: number;
   created_at: string;
   updated_at: string;
@@ -62,7 +61,7 @@ export interface CreatePostRequest {
 }
 
 export interface UpdatePostRequest extends CreatePostRequest {
-  _id: string;
+  id: string;
 }
 
 export interface CreateCategoryRequest {

@@ -28,10 +28,14 @@ async def get_public_posts(
     skip = (page - 1) * size
     
     # Build query for published posts only
-    query = {"published": True}
+    query = {"is_published": True}
     
     if category:
-        query["category_name"] = category
+        # Category filter by name or ID
+        if ObjectId.is_valid(category):
+            query["category_id"] = ObjectId(category)
+        else:
+            query["category_name"] = category
     if tags:
         query["tags"] = {"$in": tags}
     if search:
@@ -44,23 +48,35 @@ async def get_public_posts(
     # Get total count for pagination
     total = await db.posts.count_documents(query)
     
-    # Get posts with pagination
+    # Get posts with pagination and populate category/tag details
     posts = await db.posts.find(query).sort("created_at", -1).skip(skip).limit(size).to_list(length=size)
     
-    items = [
-        PostListResponse(
+    items = []
+    for post in posts:
+        # Get category details
+        category = None
+        if post.get("category_id"):
+            category_doc = await db.categories.find_one({"_id": post["category_id"]})
+            if category_doc:
+                category = {
+                    "id": str(category_doc["_id"]),
+                    "name": category_doc["name"],
+                    "description": category_doc.get("description")
+                }
+        
+        items.append(PostListResponse(
             id=str(post["_id"]),
             title=post["title"],
             summary=post.get("summary"),
-            category_name=post.get("category_name"),
+            content=post.get("content"),
+            category_id=str(post["category_id"]) if post.get("category_id") else None,
+            category=category,
             tags=post.get("tags", []),
             featured_image=post.get("featured_image"),
-            published=post["published"],
+            is_published=post["is_published"],
             created_at=post["created_at"],
-            view_count=post.get("view_count", 0)
-        )
-        for post in posts
-    ]
+            views=post.get("view_count", 0)
+        ))
     
     return {
         "items": items,
@@ -78,7 +94,7 @@ async def get_public_post(post_id: str):
         raise HTTPException(status_code=400, detail="Invalid post ID")
     
     db = get_database()
-    post = await db.posts.find_one({"_id": ObjectId(post_id), "published": True})
+    post = await db.posts.find_one({"_id": ObjectId(post_id), "is_published": True})
     
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
@@ -90,19 +106,44 @@ async def get_public_post(post_id: str):
     )
     post["view_count"] = post.get("view_count", 0) + 1
     
+    # Get category details
+    category = None
+    if post.get("category_id"):
+        category_doc = await db.categories.find_one({"_id": post["category_id"]})
+        if category_doc:
+            category = {
+                "id": str(category_doc["_id"]),
+                "name": category_doc["name"],
+                "description": category_doc.get("description")
+            }
+    
+    # Get tag details
+    tag_details = []
+    if post.get("tags"):
+        tag_docs = await db.tags.find({"name": {"$in": post["tags"]}}).to_list(length=None)
+        tag_details = [
+            {
+                "id": str(tag["_id"]),
+                "name": tag["name"],
+                "created_at": tag["created_at"]
+            }
+            for tag in tag_docs
+        ]
+    
     return PostResponse(
         id=str(post["_id"]),
         title=post["title"],
         content=post["content"],
         summary=post.get("summary"),
         category_id=str(post["category_id"]) if post.get("category_id") else None,
-        category_name=post.get("category_name"),
+        category=category,
         tags=post.get("tags", []),
+        tag_details=tag_details,
         featured_image=post.get("featured_image"),
-        published=post["published"],
+        is_published=post["is_published"],
         created_at=post["created_at"],
         updated_at=post["updated_at"],
-        view_count=post["view_count"]
+        views=post["view_count"]
     )
 
 
@@ -121,23 +162,35 @@ async def get_posts(
     # Get total count
     total = await db.posts.count_documents({})
     
-    # Get posts with pagination
+    # Get posts with pagination and populate category details
     posts = await db.posts.find({}).sort("created_at", -1).skip(skip).limit(size).to_list(length=size)
     
-    items = [
-        PostListResponse(
+    items = []
+    for post in posts:
+        # Get category details
+        category = None
+        if post.get("category_id"):
+            category_doc = await db.categories.find_one({"_id": post["category_id"]})
+            if category_doc:
+                category = {
+                    "id": str(category_doc["_id"]),
+                    "name": category_doc["name"],
+                    "description": category_doc.get("description")
+                }
+        
+        items.append(PostListResponse(
             id=str(post["_id"]),
             title=post["title"],
             summary=post.get("summary"),
-            category_name=post.get("category_name"),
+            content=post.get("content"),
+            category_id=str(post["category_id"]) if post.get("category_id") else None,
+            category=category,
             tags=post.get("tags", []),
             featured_image=post.get("featured_image"),
-            published=post["published"],
+            is_published=post["is_published"],
             created_at=post["created_at"],
-            view_count=post.get("view_count", 0)
-        )
-        for post in posts
-    ]
+            views=post.get("view_count", 0)
+        ))
     
     return {
         "items": items,
@@ -159,20 +212,34 @@ async def get_admin_posts(
     
     posts = await db.posts.find({}).sort("created_at", -1).skip(skip).limit(limit).to_list(length=limit)
     
-    return [
-        PostListResponse(
+    result = []
+    for post in posts:
+        # Get category details
+        category = None
+        if post.get("category_id"):
+            category_doc = await db.categories.find_one({"_id": post["category_id"]})
+            if category_doc:
+                category = {
+                    "id": str(category_doc["_id"]),
+                    "name": category_doc["name"],
+                    "description": category_doc.get("description")
+                }
+        
+        result.append(PostListResponse(
             id=str(post["_id"]),
             title=post["title"],
             summary=post.get("summary"),
-            category_name=post.get("category_name"),
+            content=post.get("content"),
+            category_id=str(post["category_id"]) if post.get("category_id") else None,
+            category=category,
             tags=post.get("tags", []),
             featured_image=post.get("featured_image"),
-            published=post["published"],
+            is_published=post["is_published"],
             created_at=post["created_at"],
-            view_count=post.get("view_count", 0)
-        )
-        for post in posts
-    ]
+            views=post.get("view_count", 0)
+        ))
+    
+    return result
 
 
 @router.get("/{post_id}", response_model=PostResponse)
@@ -188,7 +255,7 @@ async def get_post(post_id: str):
         raise HTTPException(status_code=404, detail="Post not found")
     
     # Only show published posts to public
-    if not post.get("published", False):
+    if not post.get("is_published", False):
         raise HTTPException(status_code=404, detail="Post not found")
     
     # Increment view count
@@ -198,19 +265,44 @@ async def get_post(post_id: str):
     )
     post["view_count"] = post.get("view_count", 0) + 1
     
+    # Get category details
+    category = None
+    if post.get("category_id"):
+        category_doc = await db.categories.find_one({"_id": post["category_id"]})
+        if category_doc:
+            category = {
+                "id": str(category_doc["_id"]),
+                "name": category_doc["name"],
+                "description": category_doc.get("description")
+            }
+    
+    # Get tag details
+    tag_details = []
+    if post.get("tags"):
+        tag_docs = await db.tags.find({"name": {"$in": post["tags"]}}).to_list(length=None)
+        tag_details = [
+            {
+                "id": str(tag["_id"]),
+                "name": tag["name"],
+                "created_at": tag["created_at"]
+            }
+            for tag in tag_docs
+        ]
+    
     return PostResponse(
         id=str(post["_id"]),
         title=post["title"],
         content=post["content"],
         summary=post.get("summary"),
         category_id=str(post["category_id"]) if post.get("category_id") else None,
-        category_name=post.get("category_name"),
+        category=category,
         tags=post.get("tags", []),
+        tag_details=tag_details,
         featured_image=post.get("featured_image"),
-        published=post["published"],
+        is_published=post["is_published"],
         created_at=post["created_at"],
         updated_at=post["updated_at"],
-        view_count=post["view_count"]
+        views=post["view_count"]
     )
 
 
@@ -226,19 +318,44 @@ async def get_admin_post(post_id: str, current_user: dict = Depends(admin_requir
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     
+    # Get category details
+    category = None
+    if post.get("category_id"):
+        category_doc = await db.categories.find_one({"_id": post["category_id"]})
+        if category_doc:
+            category = {
+                "id": str(category_doc["_id"]),
+                "name": category_doc["name"],
+                "description": category_doc.get("description")
+            }
+    
+    # Get tag details
+    tag_details = []
+    if post.get("tags"):
+        tag_docs = await db.tags.find({"name": {"$in": post["tags"]}}).to_list(length=None)
+        tag_details = [
+            {
+                "id": str(tag["_id"]),
+                "name": tag["name"],
+                "created_at": tag["created_at"]
+            }
+            for tag in tag_docs
+        ]
+    
     return PostResponse(
         id=str(post["_id"]),
         title=post["title"],
         content=post["content"],
         summary=post.get("summary"),
         category_id=str(post["category_id"]) if post.get("category_id") else None,
-        category_name=post.get("category_name"),
+        category=category,
         tags=post.get("tags", []),
+        tag_details=tag_details,
         featured_image=post.get("featured_image"),
-        published=post["published"],
+        is_published=post["is_published"],
         created_at=post["created_at"],
         updated_at=post["updated_at"],
-        view_count=post.get("view_count", 0)
+        views=post.get("view_count", 0)
     )
 
 
@@ -263,7 +380,7 @@ async def create_post(post_data: PostCreate, current_user: dict = Depends(admin_
         "category_name": category_name,
         "tags": post_data.tags,
         "featured_image": post_data.featured_image,
-        "published": post_data.published,
+        "is_published": post_data.is_published,
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow(),
         "view_count": 0
@@ -272,19 +389,44 @@ async def create_post(post_data: PostCreate, current_user: dict = Depends(admin_
     result = await db.posts.insert_one(post_dict)
     post_dict["_id"] = result.inserted_id
     
+    # Get category details
+    category = None
+    if post_dict["category_id"]:
+        category_doc = await db.categories.find_one({"_id": post_dict["category_id"]})
+        if category_doc:
+            category = {
+                "id": str(category_doc["_id"]),
+                "name": category_doc["name"],
+                "description": category_doc.get("description")
+            }
+    
+    # Get tag details
+    tag_details = []
+    if post_dict["tags"]:
+        tag_docs = await db.tags.find({"name": {"$in": post_dict["tags"]}}).to_list(length=None)
+        tag_details = [
+            {
+                "id": str(tag["_id"]),
+                "name": tag["name"],
+                "created_at": tag["created_at"]
+            }
+            for tag in tag_docs
+        ]
+    
     return PostResponse(
         id=str(post_dict["_id"]),
         title=post_dict["title"],
         content=post_dict["content"],
         summary=post_dict["summary"],
         category_id=str(post_dict["category_id"]) if post_dict["category_id"] else None,
-        category_name=post_dict["category_name"],
+        category=category,
         tags=post_dict["tags"],
+        tag_details=tag_details,
         featured_image=post_dict["featured_image"],
-        published=post_dict["published"],
+        is_published=post_dict["is_published"],
         created_at=post_dict["created_at"],
         updated_at=post_dict["updated_at"],
-        view_count=post_dict["view_count"]
+        views=post_dict["view_count"]
     )
 
 
@@ -316,6 +458,8 @@ async def update_post(
                 if category:
                     update_data["category_id"] = ObjectId(value)
                     update_data["category_name"] = category["name"]
+        elif field == "is_published":
+            update_data["is_published"] = value
         else:
             update_data[field] = value
     
@@ -327,19 +471,44 @@ async def update_post(
     # Get updated post
     updated_post = await db.posts.find_one({"_id": ObjectId(post_id)})
     
+    # Get category details
+    category = None
+    if updated_post.get("category_id"):
+        category_doc = await db.categories.find_one({"_id": updated_post["category_id"]})
+        if category_doc:
+            category = {
+                "id": str(category_doc["_id"]),
+                "name": category_doc["name"],
+                "description": category_doc.get("description")
+            }
+    
+    # Get tag details
+    tag_details = []
+    if updated_post.get("tags"):
+        tag_docs = await db.tags.find({"name": {"$in": updated_post["tags"]}}).to_list(length=None)
+        tag_details = [
+            {
+                "id": str(tag["_id"]),
+                "name": tag["name"],
+                "created_at": tag["created_at"]
+            }
+            for tag in tag_docs
+        ]
+    
     return PostResponse(
         id=str(updated_post["_id"]),
         title=updated_post["title"],
         content=updated_post["content"],
         summary=updated_post.get("summary"),
         category_id=str(updated_post["category_id"]) if updated_post.get("category_id") else None,
-        category_name=updated_post.get("category_name"),
+        category=category,
         tags=updated_post.get("tags", []),
+        tag_details=tag_details,
         featured_image=updated_post.get("featured_image"),
-        published=updated_post["published"],
+        is_published=updated_post["is_published"],
         created_at=updated_post["created_at"],
         updated_at=updated_post["updated_at"],
-        view_count=updated_post.get("view_count", 0)
+        views=updated_post.get("view_count", 0)
     )
 
 

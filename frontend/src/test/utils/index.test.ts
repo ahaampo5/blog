@@ -66,7 +66,7 @@ describe('Utility Functions', () => {
         const token = 'test-token';
         // const user = { id: '1', username: 'testuser', email: 'test@example.com', is_admin: false };
         const user: User = {
-          _id: '1',
+          id: '1',
           username: 'testuser',
           email: 'test@example.com',
           is_admin: false,

@@ -61,7 +61,8 @@ export const handlers = [
           title: 'Sample Blog Post',
           content: 'This is a sample blog post content with detailed information about React development.',
           slug: 'sample-blog-post',
-          published: true,
+          is_published: true,
+          views: 150,
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z',
           category: { 
@@ -69,7 +70,7 @@ export const handlers = [
             name: 'Technology', 
             slug: 'technology' 
           },
-          tags: [
+          tag_details: [
             { id: '1', name: 'React', slug: 'react' },
             { id: '2', name: 'JavaScript', slug: 'javascript' }
           ],
@@ -88,7 +89,8 @@ export const handlers = [
       title: 'Sample Blog Post',
       content: 'This is a sample blog post content with detailed information.',
       slug: 'sample-blog-post',
-      published: true,
+      is_published: true,
+      views: 150,
       created_at: '2024-01-01T00:00:00Z',
       updated_at: '2024-01-01T00:00:00Z',
       category: { 
@@ -96,7 +98,7 @@ export const handlers = [
         name: 'Technology', 
         slug: 'technology' 
       },
-      tags: [
+      tag_details: [
         { id: '1', name: 'React', slug: 'react' },
         { id: '2', name: 'JavaScript', slug: 'javascript' }
       ],
@@ -111,7 +113,8 @@ export const handlers = [
           title: 'Admin Post 1',
           content: 'Admin content 1',
           slug: 'admin-post-1',
-          published: true,
+          is_published: true,
+          views: 100,
           created_at: '2024-01-01T00:00:00Z',
           category_id: '1',
           tag_ids: ['1'],
@@ -130,6 +133,7 @@ export const handlers = [
       id: '2',
       ...body,
       slug: 'new-post',
+      views: 0,
       created_at: '2024-01-01T00:00:00Z',
     });
   }),

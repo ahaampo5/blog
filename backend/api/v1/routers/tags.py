@@ -33,7 +33,7 @@ async def get_popular_tags():
     
     # Aggregate tags from published posts
     pipeline = [
-        {"$match": {"published": True}},
+        {"$match": {"is_published": True}},
         {"$unwind": "$tags"},
         {"$group": {"_id": "$tags", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}},
@@ -96,3 +96,22 @@ async def delete_tag(tag_id: str, current_user: dict = Depends(admin_required)):
     result = await db.tags.delete_one({"_id": ObjectId(tag_id)})
     
     return {"message": "Tag deleted successfully"}
+
+
+@router.get("/{tag_id}", response_model=TagResponse)
+async def get_tag(tag_id: str):
+    """Get single tag (public endpoint)"""
+    if not ObjectId.is_valid(tag_id):
+        raise HTTPException(status_code=400, detail="Invalid tag ID")
+    
+    db = get_database()
+    tag = await db.tags.find_one({"_id": ObjectId(tag_id)})
+    
+    if not tag:
+        raise HTTPException(status_code=404, detail="Tag not found")
+    
+    return TagResponse(
+        id=str(tag["_id"]),
+        name=tag["name"],
+        created_at=tag["created_at"]
+    )

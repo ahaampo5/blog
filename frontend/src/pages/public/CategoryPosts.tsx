@@ -32,9 +32,9 @@ const CategoryPosts: React.FC = () => {
       )}
       <div className="space-y-6">
         {posts?.items.map((post) => (
-          <div key={post._id} className="bg-white p-6 rounded-lg shadow">
+          <div key={post.id} className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-            <p className="text-gray-600">{post.excerpt}</p>
+            <p className="text-gray-600">{post.summary}</p>
           </div>
         ))}
       </div>

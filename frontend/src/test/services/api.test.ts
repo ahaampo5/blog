@@ -202,7 +202,7 @@ describe('API Services', () => {
       };
 
       const updateRequest = {
-        _id: '1',
+        id: '1',
         title: 'Updated Post',
         content: 'Updated content',
         is_published: true,
