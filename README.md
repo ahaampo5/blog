@@ -4,14 +4,14 @@
 
 ## 🚀 기능
 
-### 공개 기능
+### Public 기능
 - 📖 블로그 포스트 목록 및 상세 조회
 - 🏷️ 카테고리별, 태그별 포스트 필터링
 - 📱 반응형 디자인 (Tailwind CSS)
 - 🔍 포스트 검색 기능
 - 📄 마크다운 지원
 
-### 관리자 기능
+### Admin 기능
 - 🔐 JWT 기반 인증 시스템
 - ✍️ 포스트 생성, 수정, 삭제 (CRUD)
 - 📁 카테고리 관리
@@ -174,17 +174,9 @@ docker-compose up -d
 3. MongoDB 인증 설정
 4. HTTPS 설정
 
-## 🤝 기여
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## 📄 라이선스
 
-이 프로젝트는 MIT 라이선스를 따릅니다.
+MIT
 
 ## 📧 문의
 
