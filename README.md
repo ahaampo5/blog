@@ -1,4 +1,4 @@
-# Full-Stack Blog Application
+# Full-Stack AI Engineer Blog
 
 풀스택 블로그 애플리케이션입니다. React (TypeScript) 프론트엔드와 FastAPI 백엔드로 구성되어 있습니다.
 
